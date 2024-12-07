@@ -9,7 +9,7 @@ contract BugPOC is Test {
     address public owner;
     address public user1;
     address public user2;
-    
+
     function setUp() public {
         owner = address(this);
         user1 = makeAddr("user1");
@@ -47,7 +47,7 @@ contract BugPOC is Test {
         token.balanceOf(user1);
         vm.prank(user2);
         token.burn(user1, 10_000e18);
-        
+
         assertEq(token.balanceOf(user1), 0);
     }
 }
